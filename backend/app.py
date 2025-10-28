@@ -6,7 +6,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def home():
-    return jsonify(message="Backend API working!")
+    return jsonify(message="🚀 Auto Deployment Success! Deployed from GitHub Actions 😎")
 
 @app.route('/db')
 def db_check():
