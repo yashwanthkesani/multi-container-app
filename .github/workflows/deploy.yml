@@ -1,0 +1,29 @@
+name: Deploy Multi-Container App to EC2
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Setup SSH Key
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/github_actions
+        chmod 600 ~/.ssh/github_actions
+        ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
+
+    - name: Deploy to EC2 via SSH
+      run: |
+        ssh -i ~/.ssh/github_actions ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} "
+        cd ~/multi-container-app &&
+        git pull &&
+        sudo docker-compose down &&
+        sudo docker-compose up -d --build
+        "
